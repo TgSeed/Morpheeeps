@@ -1,18 +1,18 @@
-# 👋🧩 Morphe Patches template
+# 🧩 TgSeed Morphe Patches
 
-Template repository for Morphe Patches.
+[Morphe](https://morphe.software) patch bundle for the apps I use.
 
 ## ❓ About
 
-Patches for apps I like.
-
-<!-- TODO: Update this about section with a brief introduction/summary about this repo and what it offers. -->
+Patches for apps I use, maintained for my own devices and shared as they are.
+Built on the [Morphe Patches template](https://github.com/MorpheApp/morphe-patches-template);
+this is an independent project and is not affiliated with or endorsed by the Morphe authors.
 
 ### How to use these patches
 
-Click the button below, or manually add this repo url to Morphe Manager: https://github.com/xyz-user/xyz-patches
+Click the button below, or manually add this repo url to Morphe Manager: https://github.com/TgSeed/Morpheeeps
 
-<a href="https://morphe.software/add-source?github=xyz-user/xyz-patches">
+<a href="https://morphe.software/add-source?github=TgSeed/Morpheeeps">
   <img src=".github/assets/add-to-morphe.svg" alt="Add to Morphe" height="48">
 </a>
 
@@ -100,4 +100,4 @@ See the [Morphe documentation](https://github.com/MorpheApp/morphe-documentation
 
 ## 📜 License
 
-UserXYZ Patches are licensed under the [GNU General Public License v3.0](LICENSE)
+TgSeed Morphe Patches are licensed under the [GNU General Public License v3.0](LICENSE)
