@@ -83,4 +83,15 @@ object Constants {
             )
         )
     )
+
+    /** Symfonium (app.symfonik.music.player) — analysed build. */
+    val COMPATIBILITY_SYMFONIUM = Compatibility(
+        name = "Symfonium",
+        packageName = "app.symfonik.music.player",
+        apkFileType = ApkFileType.APK,
+        appIconColor = 0x1B1B1F,
+        targets = listOf(
+            AppTarget(version = "15.1.0")
+        )
+    )
 }
