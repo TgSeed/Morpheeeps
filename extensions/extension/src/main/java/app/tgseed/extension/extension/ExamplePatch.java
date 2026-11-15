@@ -1,4 +1,4 @@
-package app.template.extension.extension;
+package app.tgseed.extension.extension;
 
 @SuppressWarnings("unused")
 public class ExamplePatch {

@@ -1,14 +1,13 @@
-group = "app.template"
+group = "app.tgseed"
 
 patches {
-    // TODO: Update this section with your project details.
     about {
-        name = "UserXYZ Patches"
-        description = "Patches for apps I like"
-        source = "git@github.com:UserXYZ/morphe-patches.git"
-        author = "Awesome dev"
-        contact = "na"
-        website = "na"
+        name = "TgSeed Morphe Patches"
+        description = "Patches for apps I use"
+        source = "https://github.com/TgSeed/Morpheeeps.git"
+        author = "TgSeed"
+        contact = "https://github.com/TgSeed/Morpheeeps/issues"
+        website = "https://github.com/TgSeed/Morpheeeps"
         license = "GPLv3"
     }
 }
