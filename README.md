@@ -19,9 +19,9 @@ Click the button below, or manually add this repo url to Morphe Manager: https:/
 ## 🩹 Patches list
 
 <!-- PATCHES_START EXPANDED -->
-> **[v1.0.0-dev.1](https://github.com/TgSeed/Morpheeeps/releases/tag/v1.0.0-dev.1)**&nbsp;&nbsp;•&nbsp;&nbsp;`dev`&nbsp;&nbsp;•&nbsp;&nbsp;9 patches total
+> **[v1.0.0-dev.2](https://github.com/TgSeed/Morpheeeps/releases/tag/v1.0.0-dev.2)**&nbsp;&nbsp;•&nbsp;&nbsp;`dev`&nbsp;&nbsp;•&nbsp;&nbsp;10 patches total
 <details open>
-<summary>📦 Symfonium&nbsp;&nbsp;•&nbsp;&nbsp;8 patches</summary>
+<summary>📦 Symfonium&nbsp;&nbsp;•&nbsp;&nbsp;9 patches</summary>
 <br>
 
 **Package name:** `app.symfonik.music.player`
@@ -37,6 +37,7 @@ Click the button below, or manually add this repo url to Morphe Manager: https:/
 | [Disable Firebase Analytics](#disable-firebase-analytics) | Makes every void method of FirebaseAnalytics return immediately, so no analytics event is recorded or uploaded. Getters and getInstance() are untouched. |  |
 | [Disable LeakCanary](#disable-leakcanary) | Stops the bundled LeakCanary memory profiler from installing itself by making its ContentProvider onCreate() return false. |  |
 | [Disable Matomo analytics](#disable-matomo-analytics) | Rewrites the Matomo collector URL so every analytics beacon targets an unroutable host. The Tracker is still constructed; nothing is ever delivered. |  |
+| [Disable beta expiry tripwire](#disable-beta-expiry-tripwire) | Stops the app from randomly replacing the requested screen with the "beta version has expired" update wall. |  |
 | [Force licensed state](#force-licensed-state) | Makes the licence verdict always positive and rewrites stored trial/locked entitlement values to the purchased value, so premium features stay unlocked. |  |
 | [Force purchased state](#force-purchased-state) | Reports a purchased licence by forcing the purchase state to its success value wherever the app sets an error or not-started state. |  |
 | [Hide trial card](#hide-trial-card) | Stops the licence screen from showing the free-trial expiry card and its purchase button by never storing the trial end date the server reports. |  |

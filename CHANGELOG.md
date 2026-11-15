@@ -1,3 +1,9 @@
+## [1.0.0-dev.2](https://github.com/TgSeed/Morpheeeps/compare/v1.0.0-dev.1...v1.0.0-dev.2) (2026-11-15)
+
+### ✨ New Features
+
+* **symfonium:** add patch disabling the randomised beta-expiry tripwire ([d2f800d](https://github.com/TgSeed/Morpheeeps/commit/d2f800d726df18bf6124cdc6a7956f480981c52e))
+
 ## 1.0.0-dev.1 (2026-11-15)
 
 ### ✨ New Features
