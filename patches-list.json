@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "patches": [
     {
       "name": "Disable Crashlytics",
@@ -163,6 +163,40 @@
               "version": "1.0.2",
               "versionCodes": null,
               "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Force licensed state",
+      "description": "Makes the licence accessor and every licence predicate report a verified licence, so recording is never blocked by a trial, an expired licence or a licence server verdict.",
+      "default": false,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "org.skvalex.cr",
+          "name": "Call Recorder - SKVALEX",
+          "description": null,
+          "apkFileType": "APK",
+          "appIconColor": "#7DBB21",
+          "signatures": null,
+          "formFactor": "MOBILE",
+          "targets": [
+            {
+              "version": "3.7.8",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": null,
+              "versionCodes": null,
+              "isExperimental": true,
               "minSdk": null,
               "description": null
             }
