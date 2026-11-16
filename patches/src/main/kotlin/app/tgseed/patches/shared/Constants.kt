@@ -84,6 +84,20 @@ object Constants {
         )
     )
 
+    /** SKVALEX Call Recorder (org.skvalex.cr) — analysed build. */
+    val COMPATIBILITY_CALLRECORDER = Compatibility(
+        name = "Call Recorder - SKVALEX",
+        packageName = "org.skvalex.cr",
+        apkFileType = ApkFileType.APK,
+        appIconColor = 0x7DBB21,
+        targets = listOf(
+            // Confirmed against this build. The patch is structural, so newer builds are attempted
+            // experimentally rather than refused outright.
+            AppTarget(version = "3.7.8"),
+            AppTarget(version = null, isExperimental = true)
+        )
+    )
+
     /** Symfonium (app.symfonik.music.player) — analysed build. */
     val COMPATIBILITY_SYMFONIUM = Compatibility(
         name = "Symfonium",
