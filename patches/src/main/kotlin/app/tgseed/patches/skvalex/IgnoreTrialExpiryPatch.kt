@@ -12,41 +12,39 @@ import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 
 /**
- * Makes the app permanently report a verified licence.
+ * Stops the trial from ever counting as expired, without claiming a licence.
  *
  * How the licence works in this app (verified on 3.7.8, classes.dex + smali):
  *
- *   - One int field on the Application class holds the state: 0 = check pending, 1/2 = not
- *     licensed (trial or error), 3/4 = licensed. It is written by the native licence engine
- *     (messages posted to a Handler that calls `App->i(II)V`) and read by exactly one accessor,
- *     the package-private static `()S` found by [LicenseStateGetterFingerprint].
- *   - Three tiny static `()Z` predicates in one obfuscated class turn that state into verdicts:
+ *   - One int on the Application class holds the state: 0 = check pending, 1/2 = not licensed
+ *     (trial or error), 3/4 = licensed. It is written by the native licence engine and read by
+ *     one package-private static `()S` accessor (see [LicenseStateGetterFingerprint]).
+ *   - Three tiny static `()Z` predicates turn that state into verdicts:
  *       * "is licensed"   : state == 3 || state == 4
  *       * "trial expired" : Calendar.now > trialEnd && !isLicensed
  *       * "grace expired" : Calendar.now > trialEnd + 5 days && !isLicensed
- *     The first is the predicate without any `java.util.Calendar` call; the other two call
- *     Calendar and differ only in whether they consult the state accessor or the "is licensed"
- *     predicate.
- *   - The master recording switch is `is_recording_enabled && !graceExpired`, and everything else
- *     is UI (dialogs, hidden drawer entries, licence screen text).
+ *   - The master recording switch is `is_recording_enabled && !graceExpired`, and the purchase
+ *     wall is driven by "trial expired".
  *
- * So four structural edits make the whole app see a verified licence, no matter what the native
- * engine or the licence server says:
+ * This patch forces only the two expiry predicates to `false`. It deliberately leaves the state
+ * and "is licensed" alone.
  *
- *   A. the state accessor returns 3
- *   B. "is licensed" returns true
- *   C. "trial expired" returns false
- *   D. "grace expired" returns false
+ * Why that restraint matters: an earlier version of this patch also pinned the accessor to 3 and
+ * forced "is licensed" to true. The app then believed it was licensed while its native engine knew
+ * otherwise, and the first thing that state does at startup is make `Lo/js0;->e()Z` (called while
+ * the navigation drawer is built) fire two *synchronous* native licence commands
+ * (`Native.z(4180/4181, ...)`) because the companion unlocker package `org.skvalex.cr.unlock` is
+ * not installed. On a re-signed build that path is what killed the process - the app closed
+ * immediately on launch. Keeping the state honest avoids that path entirely.
  *
- * A alone is sufficient for today's code because the field has exactly one reader — B..D are
- * cheap belt-and-braces in case a future build inlines the field or adds a call site. All four
- * are resolved structurally, without a single obfuscated name: package names rotate every
- * release, the Application class does not (it is named in the manifest).
+ * Structural discovery, no obfuscated name:
+ *   - the predicates are static `()Z` methods that call the state accessor;
+ *   - "is licensed" is the one without a `java.util.Calendar` call, "trial expired" is the one
+ *     with it;
+ *   - "grace expired" has a Calendar call and consults "is licensed" instead of the accessor.
  *
- * Everything fails loudly: shipping a partly patched licence is worse than shipping none.
+ * Fails loudly if the shapes do not match; a half-patched trial is worse than none.
  */
-private const val STATE_LICENSED = 0x3
-
 private fun Instruction.methodReference(): MethodReference? =
     (this as? ReferenceInstruction)?.reference as? MethodReference
 
@@ -83,24 +81,21 @@ private class PredicateCandidate(
 )
 
 @Suppress("unused")
-val forceLicensedStatePatch = bytecodePatch(
-    name = "Force licensed state",
-    description = "Makes the licence accessor and every licence predicate report a verified " +
-        "licence, so recording is never blocked by a trial, an expired licence or a licence " +
-        "server verdict.",
+val ignoreTrialExpiryPatch = bytecodePatch(
+    name = "Ignore trial expiry",
+    description = "Makes the trial/grace expiry predicates report \"not expired\", so recording " +
+        "is never blocked and the purchase wall never appears. The licence state itself is left " +
+        "untouched, so the app keeps telling its licence engine the truth.",
     default = false
 ) {
     compatibleWith(COMPATIBILITY_CALLRECORDER)
 
     execute {
         val stateGetter = LicenseStateGetterFingerprint.method
-        var stateGetterClass: ClassDef? = null
 
-        // Every small static ()Z method in the APK. The three licence predicates are among them,
-        // so collect first and decide afterwards — the scan stays single-pass and name-free.
+        // Every small static ()Z method in the APK; the licence predicates are among them.
         val candidates = ArrayList<PredicateCandidate>()
         classDefForEach { classDef ->
-            if (classDef.type == stateGetter.definingClass) stateGetterClass = classDef
             classDef.methods.forEach { method ->
                 if (!method.isBooleanPredicate()) return@forEach
                 val instructions = method.instructionList() ?: return@forEach
@@ -110,11 +105,6 @@ val forceLicensedStatePatch = bytecodePatch(
                 candidates.add(PredicateCandidate(classDef, method, instructions))
             }
         }
-
-        val getterClass = stateGetterClass
-            ?: throw PatchException(
-                "Application class ${stateGetter.definingClass} not found - structure changed?"
-            )
 
         val stateUsers = candidates.filter { candidate ->
             candidate.instructions.any { it.methodReference()?.matches(stateGetter) == true }
@@ -146,40 +136,30 @@ val forceLicensedStatePatch = bytecodePatch(
         val expiredPredicate = expiredPredicates.single()
         val gracePredicate = gracePredicates.single()
 
-        // (classDef, target method, injected smali)
+        // One class holds both predicates in this build, but resolve per class anyway so the
+        // conversion stays correct if a future build moves one of them.
         val edits = listOf(
-            Triple(
-                getterClass,
-                stateGetter,
-                "const/4 v0, 0x" + Integer.toHexString(STATE_LICENSED) + "\nreturn v0"
-            ),
-            Triple(licensedPredicate.classDef, licensedPredicate.method, "const/4 v0, 0x1\nreturn v0"),
-            Triple(expiredPredicate.classDef, expiredPredicate.method, "const/4 v0, 0x0\nreturn v0"),
-            Triple(gracePredicate.classDef, gracePredicate.method, "const/4 v0, 0x0\nreturn v0")
+            expiredPredicate.classDef to expiredPredicate.method,
+            gracePredicate.classDef to gracePredicate.method
         )
-
-        // Convert each class exactly once: a second `mutableClassDefBy` for the same class is how
-        // perfectly good patches lose writes.
-        edits.groupBy { it.first }.forEach { (classDef, classEdits) ->
+        edits.groupBy({ it.first }, { it.second }).forEach { (classDef, targets) ->
             val mutable = mutableClassDefBy(classDef)
-            classEdits.forEach { (_, target, body) ->
+            targets.forEach { target ->
                 val method = mutable.methods.firstOrNull { it.sameShapeAs(target) }
-                    ?: throw PatchException(
-                        "Lost ${classDef.type}->${target.name} after conversion"
-                    )
+                    ?: throw PatchException("Lost ${classDef.type}->${target.name} after conversion")
                 if ((method.implementation?.registerCount ?: 0) < 1) {
                     throw PatchException(
                         "${classDef.type}->${target.name} has no local register to return " +
                             "from - structure changed?"
                     )
                 }
-                method.addInstructions(0, body)
+                method.addInstructions(0, "const/4 v0, 0x0\nreturn v0")
             }
         }
 
         println(
-            "Force licensed state: accessor -> $STATE_LICENSED; " +
-                "predicates patched (licensed=true, expired=false, grace=false)"
+            "Ignore trial expiry: ${edits.size} expiry predicates -> false " +
+                "(licence state left untouched)"
         )
     }
 }
