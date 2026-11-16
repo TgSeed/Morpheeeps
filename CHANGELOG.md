@@ -1,3 +1,9 @@
+## [1.2.0-dev.1](https://github.com/TgSeed/Morpheeeps/compare/v1.1.0...v1.2.0-dev.1) (2026-11-16)
+
+### ✨ New Features
+
+* **skvalex:** add licence patch for Call Recorder ([a0b23fa](https://github.com/TgSeed/Morpheeeps/commit/a0b23fa606ddc519d60ed2d5222277cbe014dea2))
+
 ## [1.1.0](https://github.com/TgSeed/Morpheeeps/compare/v1.0.0...v1.1.0) (2026-11-15)
 
 ### ✨ New Features
