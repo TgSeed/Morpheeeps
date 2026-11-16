@@ -1,3 +1,9 @@
+## [1.2.0-dev.2](https://github.com/TgSeed/Morpheeeps/compare/v1.2.0-dev.1...v1.2.0-dev.2) (2026-11-16)
+
+### 🐛 Bug Fixes
+
+* **skvalex:** ignore trial expiry instead of forcing a licence ([c0d74aa](https://github.com/TgSeed/Morpheeeps/commit/c0d74aa99399e0971d67e6d25a6d0eac3508db41))
+
 ## [1.2.0-dev.1](https://github.com/TgSeed/Morpheeeps/compare/v1.1.0...v1.2.0-dev.1) (2026-11-16)
 
 ### ✨ New Features
